@@ -1,0 +1,107 @@
+<div class="root-column" fxLayout="column" fxLayoutAlign="start center">
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Static Query</mat-panel-title>
+        <mat-panel-description>Execute static sql files.</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="expansion-panel-body" fxLayout="column" fxLayoutAlign="start center">
+        <mat-form-field appearance="outline">
+          <mat-label>Select File Name</mat-label>
+          <input [(ngModel)]="fileAC.input"
+                 [formControl]="fileAC.inputControl"
+                 [matAutocomplete]="autocompleteFile"
+                 matInput
+                 placeholder="Pick File-Name"
+                 type="text">
+          <button (click)="submitStaticQuery(fileAC.input)" mat-icon-button matSuffix>
+            <mat-icon>search</mat-icon>
+          </button>
+          <mat-autocomplete #autocompleteFile="matAutocomplete">
+            <mat-option (click)="submitStaticQuery(option)" *ngFor="let option of fileAC.filteredOptions | async"
+                        [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </mat-expansion-panel>
+
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Dynamic Query</mat-panel-title>
+        <mat-panel-description>Execute dynamic SELECT queries.</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="expansion-panel-body" fxLayout="column" fxLayoutAlign="start center">
+
+        <mat-form-field appearance="outline">
+          <mat-label>SELECT Statement</mat-label>
+          <textarea [(ngModel)]="queryRequestData.statement" matInput></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+          <mat-label>DB URL</mat-label>
+          <input [(ngModel)]="queryRequestData.dbUrl" matInput>
+          <button *ngIf="queryRequestData.dbUrl" (click)="queryRequestData.dbUrl = ''" mat-icon-button matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+          <mat-label>DB Username</mat-label>
+          <input [(ngModel)]="queryRequestData.username" matInput>
+          <button *ngIf="queryRequestData.username" (click)="queryRequestData.username = ''" mat-icon-button matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+          <mat-label>DB Password</mat-label>
+          <input [(ngModel)]="queryRequestData.password" matInput type="password">
+          <button *ngIf="queryRequestData.password" (click)="queryRequestData.password = ''" mat-icon-button matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div class="expansion-panel-actions" fxLayout="row wrap" fxLayoutAlign="start center">
+          <button *ngIf="customDbEnabled" (click)="chooseDefaultDB()" mat-raised-button color="accent">
+            Default DB
+          </button>
+          <button *ngIf="!customDbEnabled" (click)="chooseCustomDB()" mat-raised-button color="accent">
+            Custom DB
+          </button>
+          <button (click)="submitDynamicQuery()" [disabled]="!queryRequestData.statement" mat-raised-button
+                  color="primary">
+            Submit Request
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <table *ngIf="queryResponseData">
+    <tr *ngIf="queryResponseData.columnDef">
+      <th *ngFor="let column of queryResponseData.columnDef | keyvalue; let i = index">
+        {{column.value}}
+        <!-- TODO use map keys for safer mapping -->
+      </th>
+    </tr>
+    <tr *ngFor="let row of queryResponseData.rows">
+      <td *ngFor="let cell of row">
+        {{cell}}
+        <!-- TODO use map keys for safer mapping -->
+      </td>
+    </tr>
+  </table>
+
+  <mat-list *ngIf="queryResponseData?.errorCount">
+    <div mat-subheader>Errors at {{queryResponseData?.errorCount}}/{{queryResponseData?.instanceCount}} instances.</div>
+    <mat-list-item *ngFor="let errorMessage of queryResponseData?.errorMessages">
+      <mat-icon mat-list-icon>folder</mat-icon>
+      <div mat-line>{{errorMessage}}</div>
+    </mat-list-item>
+  </mat-list>
+</div>

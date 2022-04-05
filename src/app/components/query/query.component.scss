@@ -1,0 +1,42 @@
+.root-column {
+  margin: 25px;
+
+  mat-expansion-panel {
+    padding: 10px;
+    min-width: 500px;
+
+    .expansion-panel-body {
+      mat-form-field {
+        margin: 0 5px;
+        min-width: 300px;
+      }
+    }
+
+    .expansion-panel-actions {
+      min-width: 310px;
+
+      button {
+        min-width: 150px;
+        margin: 10px;
+      }
+    }
+  }
+
+  table {
+    margin-top: 20px;
+
+    th {
+      text-align: left;
+      padding-right: 5px;
+      padding-left: 5px;
+    }
+
+    td {
+      padding-right: 5px;
+      padding-left: 5px;
+      text-align: left;
+    }
+  }
+}
+
+

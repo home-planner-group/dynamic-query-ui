@@ -1,0 +1,37 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.primary-snack-bar {
+  button {
+    color: #5168e2;
+  }
+}
+
+.warn-snack-bar {
+  button {
+    color: #ff0000;
+  }
+}
+
+.footer-actions {
+  margin-top: 30px;
+
+  button {
+    min-width: 150px;
+    margin: 10px;
+  }
+}
+
+.disabled-color {
+  :disabled {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
