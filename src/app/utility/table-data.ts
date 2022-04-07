@@ -1,16 +1,19 @@
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {QueryResponse} from "../models/QueryResponse";
 
-export class TableData<Type> {
-  data: Type[] = [];
-  readonly displayedColumns: string[] = [];
-  readonly dataSource = new MatTableDataSource<Type>();
+export class TableData {
+  readonly dataSource = new MatTableDataSource<Object>();
+
+  data: Object[][] = [];
+  columnsDef: Map<number, string> = new Map<number, string>();
+  displayedColumns: string[] = [];
+
   readonly pageSizeOptions = [5, 10, 25, 100];
   readonly defaultPageSize = 25;
 
-  constructor(displayedColumns: string[]) {
-    this.displayedColumns = displayedColumns;
+  constructor() {
     this.dataSource.data = this.data;
   }
 
@@ -23,8 +26,20 @@ export class TableData<Type> {
     }
   }
 
-  public setData(data: Type[]) {
-    this.data = data;
+  public setData(data: QueryResponse) {
+    this.columnsDef.clear();
+    this.displayedColumns = [];
+
+    for (let i = 0; i < 20; i++) {
+      const value = data.columnDef[i];
+      if (!value) continue;
+      const cleanValue = value.toLowerCase();
+
+      this.columnsDef.set(i, cleanValue);
+      this.displayedColumns.push(cleanValue);
+    }
+
+    this.data = data.rows;
     this.dataSource.data = this.data;
   }
 }

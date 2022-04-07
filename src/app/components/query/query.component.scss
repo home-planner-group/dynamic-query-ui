@@ -22,20 +22,25 @@
     }
   }
 
-  table {
-    margin-top: 20px;
+  .statement-table {
+    margin-top: 30px;
 
     th {
+      padding-left: 10px;
+      padding-right: 10px;
       text-align: left;
-      padding-right: 5px;
-      padding-left: 5px;
     }
 
     td {
-      padding-right: 5px;
-      padding-left: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
       text-align: left;
     }
+  }
+
+  mat-card {
+    margin-top: 30px;
+    padding: 10px;
   }
 }
 

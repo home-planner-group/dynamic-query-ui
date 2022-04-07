@@ -82,26 +82,33 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <table *ngIf="queryResponseData">
-    <tr *ngIf="queryResponseData.columnDef">
-      <th *ngFor="let column of queryResponseData.columnDef | keyvalue; let i = index">
-        {{column.value}}
-        <!-- TODO use map keys for safer mapping -->
-      </th>
-    </tr>
-    <tr *ngFor="let row of queryResponseData.rows">
-      <td *ngFor="let cell of row">
-        {{cell}}
-        <!-- TODO use map keys for safer mapping -->
-      </td>
-    </tr>
-  </table>
+  <div class="mat-elevation-z8 statement-table">
+    <table [dataSource]="tableData.dataSource" mat-table matSort>
 
-  <mat-list *ngIf="queryResponseData?.errorCount">
-    <div mat-subheader>Errors at {{queryResponseData?.errorCount}}/{{queryResponseData?.instanceCount}} instances.</div>
-    <mat-list-item *ngFor="let errorMessage of queryResponseData?.errorMessages">
-      <mat-icon mat-list-icon>folder</mat-icon>
-      <div mat-line>{{errorMessage}}</div>
-    </mat-list-item>
-  </mat-list>
+      <ng-container *ngFor="let column of tableData.columnsDef | keyvalue" matColumnDef="{{column.value}}">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>
+          {{column.value}}
+        </th>
+        <td *matCellDef="let row" mat-cell>
+          {{row[column.key]}}
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="tableData.displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: tableData.displayedColumns;" mat-row></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="tableData.pageSizeOptions" [pageSize]="tableData.defaultPageSize"></mat-paginator>
+  </div>
+
+  <mat-card *ngIf="queryResponseData && queryResponseData.errorCount > 0">
+    <mat-list *ngIf="queryResponseData?.errorCount">
+      <h2 mat-card-title>Errors at {{queryResponseData?.errorCount}}/{{queryResponseData?.instanceCount}}
+        instances.</h2>
+      <mat-list-item *ngFor="let errorMessage of queryResponseData?.errorMessages">
+        <mat-icon mat-list-icon>error_outline</mat-icon>
+        <div mat-line>{{errorMessage}}</div>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
 </div>

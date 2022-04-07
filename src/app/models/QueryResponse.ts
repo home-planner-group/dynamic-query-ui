@@ -1,7 +1,7 @@
 export interface QueryResponse {
-  instanceCount?: number;
-  columnDef?: Map<number, string>;
-  rows?: object[][];
-  errorCount?: number;
+  instanceCount: number;
+  columnDef: string[];
+  rows: object[][];
+  errorCount: number;
   errorMessages?: string[];
 }
