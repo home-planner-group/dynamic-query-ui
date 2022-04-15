@@ -60,7 +60,7 @@
           <button (click)="chooseStaticCustomDB()" *ngIf="!staticCustomDbEnabled" color="accent" mat-raised-button>
             Custom DB
           </button>
-          <button (click)="submitStaticQuery()" [disabled]="!staticRequestData.fileName" color="primary"
+          <button (click)="submitStaticQuery()" [disabled]="!fileAC.input" color="primary"
                   mat-raised-button>
             Submit Request
           </button>

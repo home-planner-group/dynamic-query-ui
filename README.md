@@ -4,6 +4,22 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 The application starts on [http://localhost:4200](http://localhost:4200).
 
+## Docker Image
+
+* __Dockerfile__: [Multistage Dockerfile with Nginx](Dockerfile)
+* __Settings:__ [nginx.conf](nginx.conf)
+  * Exposes `Port 4200`
+  * Uses __API__ at `Port 8088`
+* __Pull Image:__
+  * `docker pull ghcr.io/home-planner-group/dynamic-query-ui:latest`
+* __Run Container:__
+  * `docker run -d -p 4202:4200 --name query-ui ghcr.io/home-planner-group/dynamic-query-ui:latest`
+
+## Docker Compose
+
+To start the independent application stack of the Dynamic-Query-Service, run `docker-compose up` with
+its [configuration](docker-compose.yml).
+
 ## Architecture
 
 ```
@@ -44,6 +60,18 @@ The application starts on [http://localhost:4200](http://localhost:4200).
 * [Flex Layout](https://github.com/angular/flex-layout):
   * `npm i -s @angular/flex-layout @angular/cdk`
   * Tool: [Demo](https://tburleson-layouts-demos.firebaseapp.com/#/docs)
+
+## GitHub Workflows
+
+<details>
+  <summary>Docker Image Delivery Workflow</summary>
+
+* [.github/workflows/docker-image.yml](.github/workflows/docker-image.yml)
+  * __Trigger:__ manual or on published release
+  * Executes `docker build`
+  * Execute `docker push` to GitHub Packages
+
+</details>
 
 ## Angular Commands
 
