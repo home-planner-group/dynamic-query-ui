@@ -2,12 +2,13 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {QueryService} from "../../services/query.service";
 import {AutoComplete} from "../../utility/autocomplete-data";
-import {QueryRequest} from "../../models/QueryRequest";
+import {DynamicRequest} from "../../models/DynamicRequest";
 import {QueryResponse} from "../../models/QueryResponse";
 import {OpenSnackBar} from "../../utility/snackbar";
 import {TableData} from "../../utility/table-data";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {StaticRequest} from "../../models/StaticRequest";
 
 @Component({
   selector: 'app-query',
@@ -19,9 +20,13 @@ export class QueryComponent implements OnInit, AfterViewInit {
   fileAC = new AutoComplete();
   tableData = new TableData();
 
-  queryRequestData = new QueryRequest();
+  staticRequestData = new StaticRequest();
+  staticCustomDbEnabled = false;
+  dynamicRequestData = new DynamicRequest();
+  dynamicCustomDbEnabled = false;
+
   queryResponseData: QueryResponse | undefined;
-  customDbEnabled = false;
+
 
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -31,42 +36,51 @@ export class QueryComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadFileOptions();
+    this.queryService.getFiles().subscribe((response) => {
+      this.fileAC.options = response;
+    });
   }
 
   ngAfterViewInit(): void {
     this.tableData.afterViewInit(this.paginator, this.sort);
   }
 
-  public chooseCustomDB() {
-    this.queryRequestData.customDB();
-    this.customDbEnabled = true;
+  public chooseStaticCustomDB() {
+    this.staticRequestData.customDB();
+    this.staticCustomDbEnabled = true;
   }
 
-  public chooseDefaultDB() {
-    this.queryRequestData.defaultDB();
-    this.customDbEnabled = false;
+  public chooseStaticDefaultDB() {
+    this.staticRequestData.defaultDB();
+    this.staticCustomDbEnabled = false;
   }
 
-  public submitStaticQuery(fileName: string): void {
-    this.queryService.staticQuery(fileName).subscribe((response) => {
-      this.queryResponseData = response;
-      this.tableData.setData(response);
-      OpenSnackBar(this.snackBar, 'Query was successful.');
+  public chooseDynamicCustomDB() {
+    this.dynamicRequestData.customDB();
+    this.dynamicCustomDbEnabled = true;
+  }
+
+  public chooseDynamicDefaultDB() {
+    this.dynamicRequestData.defaultDB();
+    this.dynamicCustomDbEnabled = false;
+  }
+
+  public submitStaticQuery(): void {
+    this.staticRequestData.fileName = this.fileAC.input;
+    this.queryService.staticQuery(this.staticRequestData).subscribe((response) => {
+      this.receiveQueryResponse(response);
     });
   }
 
   public submitDynamicQuery(): void {
-    this.queryService.dynamicQuery(this.queryRequestData).subscribe((response) => {
-      this.queryResponseData = response;
-      this.tableData.setData(response);
-      OpenSnackBar(this.snackBar, 'Query was successful.');
+    this.queryService.dynamicQuery(this.dynamicRequestData).subscribe((response) => {
+      this.receiveQueryResponse(response);
     });
   }
 
-  private loadFileOptions(): void {
-    this.queryService.getFiles().subscribe((response) => {
-      this.fileAC.options = response;
-    });
+  private receiveQueryResponse(response: QueryResponse): void {
+    this.queryResponseData = response;
+    this.tableData.setData(response);
+    OpenSnackBar(this.snackBar, 'Query was successful.');
   }
 }

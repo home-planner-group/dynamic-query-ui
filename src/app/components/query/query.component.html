@@ -7,6 +7,7 @@
       </mat-expansion-panel-header>
 
       <div class="expansion-panel-body" fxLayout="column" fxLayoutAlign="start center">
+
         <mat-form-field appearance="outline">
           <mat-label>Select File Name</mat-label>
           <input [(ngModel)]="fileAC.input"
@@ -15,16 +16,55 @@
                  matInput
                  placeholder="Pick File-Name"
                  type="text">
-          <button (click)="submitStaticQuery(fileAC.input)" mat-icon-button matSuffix>
-            <mat-icon>search</mat-icon>
+          <button (click)="fileAC.input = ''" *ngIf="fileAC.input" mat-icon-button
+                  matSuffix>
+            <mat-icon>clear</mat-icon>
           </button>
           <mat-autocomplete #autocompleteFile="matAutocomplete">
-            <mat-option (click)="submitStaticQuery(option)" *ngFor="let option of fileAC.filteredOptions | async"
-                        [value]="option">
+            <mat-option *ngFor="let option of fileAC.filteredOptions | async" [value]="option">
               {{option}}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
+
+        <mat-form-field *ngIf="staticCustomDbEnabled" appearance="outline">
+          <mat-label>DB URL</mat-label>
+          <input [(ngModel)]="staticRequestData.dbUrl" matInput>
+          <button (click)="staticRequestData.dbUrl = ''" *ngIf="staticRequestData.dbUrl" mat-icon-button matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="staticCustomDbEnabled" appearance="outline">
+          <mat-label>DB Username</mat-label>
+          <input [(ngModel)]="staticRequestData.username" matInput>
+          <button (click)="staticRequestData.username = ''" *ngIf="staticRequestData.username" mat-icon-button
+                  matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="staticCustomDbEnabled" appearance="outline">
+          <mat-label>DB Password</mat-label>
+          <input [(ngModel)]="staticRequestData.password" matInput type="password">
+          <button (click)="staticRequestData.password = ''" *ngIf="staticRequestData.password" mat-icon-button
+                  matSuffix>
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div class="expansion-panel-actions" fxLayout="row wrap" fxLayoutAlign="start center">
+          <button (click)="chooseStaticDefaultDB()" *ngIf="staticCustomDbEnabled" color="accent" mat-raised-button>
+            Default DB
+          </button>
+          <button (click)="chooseStaticCustomDB()" *ngIf="!staticCustomDbEnabled" color="accent" mat-raised-button>
+            Custom DB
+          </button>
+          <button (click)="submitStaticQuery()" [disabled]="!staticRequestData.fileName" color="primary"
+                  mat-raised-button>
+            Submit Request
+          </button>
+        </div>
       </div>
     </mat-expansion-panel>
 
@@ -39,41 +79,43 @@
 
         <mat-form-field appearance="outline">
           <mat-label>SELECT Statement</mat-label>
-          <textarea [(ngModel)]="queryRequestData.statement" matInput></textarea>
+          <textarea [(ngModel)]="dynamicRequestData.statement" matInput></textarea>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+        <mat-form-field *ngIf="dynamicCustomDbEnabled" appearance="outline">
           <mat-label>DB URL</mat-label>
-          <input [(ngModel)]="queryRequestData.dbUrl" matInput>
-          <button *ngIf="queryRequestData.dbUrl" (click)="queryRequestData.dbUrl = ''" mat-icon-button matSuffix>
+          <input [(ngModel)]="dynamicRequestData.dbUrl" matInput>
+          <button (click)="dynamicRequestData.dbUrl = ''" *ngIf="dynamicRequestData.dbUrl" mat-icon-button matSuffix>
             <mat-icon>clear</mat-icon>
           </button>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+        <mat-form-field *ngIf="dynamicCustomDbEnabled" appearance="outline">
           <mat-label>DB Username</mat-label>
-          <input [(ngModel)]="queryRequestData.username" matInput>
-          <button *ngIf="queryRequestData.username" (click)="queryRequestData.username = ''" mat-icon-button matSuffix>
+          <input [(ngModel)]="dynamicRequestData.username" matInput>
+          <button (click)="dynamicRequestData.username = ''" *ngIf="dynamicRequestData.username" mat-icon-button
+                  matSuffix>
             <mat-icon>clear</mat-icon>
           </button>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" *ngIf="customDbEnabled">
+        <mat-form-field *ngIf="dynamicCustomDbEnabled" appearance="outline">
           <mat-label>DB Password</mat-label>
-          <input [(ngModel)]="queryRequestData.password" matInput type="password">
-          <button *ngIf="queryRequestData.password" (click)="queryRequestData.password = ''" mat-icon-button matSuffix>
+          <input [(ngModel)]="dynamicRequestData.password" matInput type="password">
+          <button (click)="dynamicRequestData.password = ''" *ngIf="dynamicRequestData.password" mat-icon-button
+                  matSuffix>
             <mat-icon>clear</mat-icon>
           </button>
         </mat-form-field>
 
         <div class="expansion-panel-actions" fxLayout="row wrap" fxLayoutAlign="start center">
-          <button *ngIf="customDbEnabled" (click)="chooseDefaultDB()" mat-raised-button color="accent">
+          <button (click)="chooseDynamicDefaultDB()" *ngIf="dynamicCustomDbEnabled" color="accent" mat-raised-button>
             Default DB
           </button>
-          <button *ngIf="!customDbEnabled" (click)="chooseCustomDB()" mat-raised-button color="accent">
+          <button (click)="chooseDynamicCustomDB()" *ngIf="!dynamicCustomDbEnabled" color="accent" mat-raised-button>
             Custom DB
           </button>
-          <button (click)="submitDynamicQuery()" [disabled]="!queryRequestData.statement" mat-raised-button
+          <button (click)="submitDynamicQuery()" [disabled]="!dynamicRequestData.statement" mat-raised-button
                   color="primary">
             Submit Request
           </button>
@@ -82,7 +124,8 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div class="mat-elevation-z8 statement-table">
+  <div [style.opacity]="queryResponseData && queryResponseData.instanceCount > 0 ? '100%' : 0"
+       class="mat-elevation-z8 statement-table">
     <table [dataSource]="tableData.dataSource" mat-table matSort>
 
       <ng-container *ngFor="let column of tableData.columnsDef | keyvalue" matColumnDef="{{column.value}}">

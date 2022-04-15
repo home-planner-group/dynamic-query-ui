@@ -4,8 +4,7 @@
 
 export const environment = {
   production: false,
-  backendApiUrl: 'http://localhost:8088',
-  freshPlannerUrl: 'http://localhost:4200'
+  backendApiUrl: 'http://localhost:8088'
 };
 
 /*

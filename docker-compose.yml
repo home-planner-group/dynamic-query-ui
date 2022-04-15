@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  dynmaic-query-mysql:
+    image: mysql:8.0
+    container_name: dynamic-query-mysql
+    restart: on-failure
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql:/var/lib/mysql
+
+  dynamic-query-api:
+    image: ghcr.io/home-planner-group/dynamic-query-api:latest
+    container_name: dynamic-query-api
+    restart: on-failure
+    depends_on:
+      - dynmaic-query-mysql
+    environment:
+      - DATABASE_URL=jdbc:mysql://dynmaic-query-mysql:3306/dynamic_stack_db?createDatabaseIfNotExist=true
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=password
+    expose:
+      - 8088
+    ports:
+      - "8088:8088"
+
+  dynamic-query-ui:
+    image: ghcr.io/home-planner-group/dynamic-query-ui:latest
+    container_name: dynamic-query-ui
+    restart: on-failure
+    depends_on:
+      - dynamic-query-api
+    expose:
+      - 4200
+    ports:
+      - "4202:4200"
+
+volumes:
+  mysql:
